@@ -1,5 +1,5 @@
 
-#  Loan Approval Prediction
+# Project: Loan Approval Prediction
 
 This project predicts whether a loan application will be approved based on applicant data using machine learning.
 
