@@ -1,0 +1,324 @@
+Problem 1: Primary Department for Each Employee
+Description: Table: Employee
+
++---------------+---------+
+| Column Name   |  Type   |
++---------------+---------+
+| employee_id   | int     |
+| department_id | int     |
+| primary_flag  | varchar |
++---------------+---------+
+(employee_id, department_id) is the primary key (combination of columns with unique values) for this table.
+employee_id is the id of the employee.
+department_id is the id of the department to which the employee belongs.
+primary_flag is an ENUM (category) of type ('Y', 'N'). If the flag is 'Y', the department is the primary department for the employee. If the flag is 'N', the department is not the primary.
+ 
+
+Employees can belong to multiple departments. When the employee joins other departments, they need to decide which department is their primary department. Note that when an employee belongs to only one department, their primary column is 'N'.
+
+Write a solution to report all the employees with their primary department. For employees who belong to one department, report their only department.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ Example 1:
+
+Input: 
+Employee table:
++-------------+---------------+--------------+
+| employee_id | department_id | primary_flag |
++-------------+---------------+--------------+
+| 1           | 1             | N            |
+| 2           | 1             | Y            |
+| 2           | 2             | N            |
+| 3           | 3             | N            |
+| 4           | 2             | N            |
+| 4           | 3             | Y            |
+| 4           | 4             | N            |
++-------------+---------------+--------------+
+Output: 
++-------------+---------------+
+| employee_id | department_id |
++-------------+---------------+
+| 1           | 1             |
+| 2           | 1             |
+| 3           | 3             |
+| 4           | 3             |
++-------------+---------------+
+Explanation: 
+- The Primary department for employee 1 is 1.
+- The Primary department for employee 2 is 1.
+- The Primary department for employee 3 is 3.
+- The Primary department for employee 4 is 3.
+
+Solution:
+
+ SELECT employee_id, department_id
+FROM Employee
+WHERE primary_flag = 'Y'
+   OR employee_id IN (
+       SELECT employee_id
+       FROM Employee
+       GROUP BY employee_id
+       HAVING COUNT(*) = 1
+   );
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Problem 2: Recyclable and Low Fat Products
+Description: Table: Products
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| product_id  | int     |
+| low_fats    | enum    |
+| recyclable  | enum    |
++-------------+---------+
+product_id is the primary key (column with unique values) for this table.
+low_fats is an ENUM (category) of type ('Y', 'N') where 'Y' means this product is low fat and 'N' means it is not.
+recyclable is an ENUM (category) of types ('Y', 'N') where 'Y' means this product is recyclable and 'N' means it is not.
+ 
+
+Write a solution to find the ids of products that are both low fat and recyclable.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ Example 1:
+
+Input: 
+Products table:
++-------------+----------+------------+
+| product_id  | low_fats | recyclable |
++-------------+----------+------------+
+| 0           | Y        | N          |
+| 1           | Y        | Y          |
+| 2           | N        | Y          |
+| 3           | Y        | Y          |
+| 4           | N        | N          |
++-------------+----------+------------+
+Output: 
++-------------+
+| product_id  |
++-------------+
+| 1           |
+| 3           |
++-------------+
+Explanation: Only products 1 and 3 are both low fat and recyclable.
+Solution:
+   select product_id from Products
+   where low_fats="Y" and recyclable="Y";
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Problem 3:Find Total Time Spent by Each Employee
+Description:Table: Employees
+
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| emp_id      | int  |
+| event_day   | date |
+| in_time     | int  |
+| out_time    | int  |
++-------------+------+
+(emp_id, event_day, in_time) is the primary key (combinations of columns with unique values) of this table.
+The table shows the employees' entries and exits in an office.
+event_day is the day at which this event happened, in_time is the minute at which the employee entered the office, and out_time is the minute at which they left the office.
+in_time and out_time are between 1 and 1440.
+It is guaranteed that no two events on the same day intersect in time, and in_time < out_time.
+ 
+
+Write a solution to calculate the total time in minutes spent by each employee on each day at the office. Note that within one day, an employee can enter and leave more than once. The time spent in the office for a single entry is out_time - in_time.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+Example 1:
+
+Input: 
+Employees table:
++--------+------------+---------+----------+
+| emp_id | event_day  | in_time | out_time |
++--------+------------+---------+----------+
+| 1      | 2020-11-28 | 4       | 32       |
+| 1      | 2020-11-28 | 55      | 200      |
+| 1      | 2020-12-03 | 1       | 42       |
+| 2      | 2020-11-28 | 3       | 33       |
+| 2      | 2020-12-09 | 47      | 74       |
++--------+------------+---------+----------+
+Output: 
++------------+--------+------------+
+| day        | emp_id | total_time |
++------------+--------+------------+
+| 2020-11-28 | 1      | 173        |
+| 2020-11-28 | 2      | 30         |
+| 2020-12-03 | 1      | 41         |
+| 2020-12-09 | 2      | 27         |
++------------+--------+------------+
+Explanation: 
+Employee 1 has three events: two on day 2020-11-28 with a total of (32 - 4) + (200 - 55) = 173, and one on day 2020-12-03 with a total of (42 - 1) = 41.
+Employee 2 has two events: one on day 2020-11-28 with a total of (33 - 3) = 30, and one on day 2020-12-09 with a total of (74 - 47) = 27.
+
+Solution:
+   select event_day as day ,emp_id,sum(out_time-in_time) as total_time
+   from Employees
+   group by event_day,emp_id;
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Problem 5:The Number of Employees Which Report to Each Employee
+Description:Table: Employees
+
++-------------+----------+
+| Column Name | Type     |
++-------------+----------+
+| employee_id | int      |
+| name        | varchar  |
+| reports_to  | int      |
+| age         | int      |
++-------------+----------+
+employee_id is the column with unique values for this table.
+This table contains information about the employees and the id of the manager they report to. Some employees do not report to anyone (reports_to is null). 
+ 
+For this problem, we will consider a manager an employee who has at least 1 other employee reporting to them.
+
+Write a solution to report the ids and the names of all managers, the number of employees who report directly to them, and the average age of the reports rounded to the nearest integer.
+
+Return the result table ordered by employee_id.
+
+The result format is in the following example.
+
+Example 1:
+
+Input: 
+Employees table:
++-------------+---------+------------+-----+
+| employee_id | name    | reports_to | age |
++-------------+---------+------------+-----+
+| 9           | Hercy   | null       | 43  |
+| 6           | Alice   | 9          | 41  |
+| 4           | Bob     | 9          | 36  |
+| 2           | Winston | null       | 37  |
++-------------+---------+------------+-----+
+Output: 
++-------------+-------+---------------+-------------+
+| employee_id | name  | reports_count | average_age |
++-------------+-------+---------------+-------------+
+| 9           | Hercy | 2             | 39          |
++-------------+-------+---------------+-------------+
+Explanation: Hercy has 2 people report directly to him, Alice and Bob. Their average age is (41+36)/2 = 38.5, which is 39 after rounding it to the nearest integer.
+Example 2:
+
+Input: 
+Employees table:
++-------------+---------+------------+-----+ 
+| employee_id | name    | reports_to | age |
+|-------------|---------|------------|-----|
+| 1           | Michael | null       | 45  |
+| 2           | Alice   | 1          | 38  |
+| 3           | Bob     | 1          | 42  |
+| 4           | Charlie | 2          | 34  |
+| 5           | David   | 2          | 40  |
+| 6           | Eve     | 3          | 37  |
+| 7           | Frank   | null       | 50  |
+| 8           | Grace   | null       | 48  |
++-------------+---------+------------+-----+ 
+Output: 
++-------------+---------+---------------+-------------+
+| employee_id | name    | reports_count | average_age |
+| ----------- | ------- | ------------- | ----------- |
+| 1           | Michael | 2             | 40          |
+| 2           | Alice   | 2             | 37          |
+| 3           | Bob     | 1             | 37          |
++-------------+---------+---------------+-------------+
+Solution:
+    select m.employee_id,m.name,count(e.reports_to) as reports_count,round(avg(e.age)) as average_age from Employees e
+    join Employees m
+    on e.reports_to=m.employee_id
+    group by m.employee_id,m.name
+    order by m.employee_id;
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Problem 6: Customer Who Visited but Did Not Make Any Transactions
+Description:Table: Visits
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| visit_id    | int     |
+| customer_id | int     |
++-------------+---------+
+visit_id is the column with unique values for this table.
+This table contains information about the customers who visited the mall.
+ 
+
+Table: Transactions
+
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| transaction_id | int     |
+| visit_id       | int     |
+| amount         | int     |
++----------------+---------+
+transaction_id is column with unique values for this table.
+This table contains information about the transactions made during the visit_id.
+ 
+Write a solution to find the IDs of the users who visited without making any transactions and the number of times they made these types of visits.
+
+Return the result table sorted in any order.
+
+The result format is in the following example.
+
+Example 1:
+Input: 
+Visits
++----------+-------------+
+| visit_id | customer_id |
++----------+-------------+
+| 1        | 23          |
+| 2        | 9           |
+| 4        | 30          |
+| 5        | 54          |
+| 6        | 96          |
+| 7        | 54          |
+| 8        | 54          |
++----------+-------------+
+Transactions
++----------------+----------+--------+
+| transaction_id | visit_id | amount |
++----------------+----------+--------+
+| 2              | 5        | 310    |
+| 3              | 5        | 300    |
+| 9              | 5        | 200    |
+| 12             | 1        | 910    |
+| 13             | 2        | 970    |
++----------------+----------+--------+
+Output: 
++-------------+----------------+
+| customer_id | count_no_trans |
++-------------+----------------+
+| 54          | 2              |
+| 30          | 1              |
+| 96          | 1              |
++-------------+----------------+
+Explanation: 
+Customer with id = 23 visited the mall once and made one transaction during the visit with id = 12.
+Customer with id = 9 visited the mall once and made one transaction during the visit with id = 13.
+Customer with id = 30 visited the mall once and did not make any transactions.
+Customer with id = 54 visited the mall three times. During 2 visits they did not make any transactions, and during one visit they made 3 transactions.
+Customer with id = 96 visited the mall once and did not make any transactions.
+As we can see, users with IDs 30 and 96 visited the mall one time without making any transactions. Also, user 54 visited the mall twice and did not make any transactions.
+
+Solution:
+  SELECT Visits.customer_id,COUNT(*) as count_no_trans
+  from Visits
+  left join Transactions
+  on Visits.visit_id=Transactions.visit_id
+  where Transactions.visit_id is null
+  group by customer_id;
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
